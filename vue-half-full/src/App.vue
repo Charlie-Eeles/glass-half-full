@@ -1,44 +1,55 @@
 <template>
-  <div class="button-container">
-    <button v-for="n in 4" :key="n" @click="handler(n)" :class="'button-' + n">
-      {{ ["create", "read", "update", "delete"][n-1] }}
-    </button>
+  <div>
+    <div v-for="x in 3" :key="x" class="component-container">
+      <div class="input-button-container">
+        <input placeholder="enter a url..." v-model="this.urls[x]"/>
+        <div class="button-group">
+          <button v-for="n in 4" :key="n" @click="handler(n, x)">
+            {{ ["post", "get", "update", "delete"][n-1] }}
+          </button>
+        </div>
+      </div>
+      <textarea placeholder="add a request body..." v-model="bodies[x]"/>
+    </div>
   </div>
 </template>
-
 <script>
 export default {
+  data() {
+    return {
+      urls : {},
+      bodies: {},
+    }
+  },
   methods: {
-    async handler(buttonNumber) {
+    async handler(buttonNumber, inputKey) {
       switch(buttonNumber) {
         case 1:
-          await this.postFunc();
+          await this.postFunc(inputKey);
           break;
         case 2:
-          await this.getFunc();
+          await this.getFunc(inputKey);
           break;
         case 3:
-          await this.putFunc();
+          await this.putFunc(inputKey);
           break;
         case 4:
-          await this.deleteFunc();
+          await this.deleteFunc(inputKey);
           break;
         default:
           console.log("Testing function matching clicked button hasn't been implemented");
       }
     },
 
-    async postFunc() {
+    async postFunc(urlsKey) {
       try {
-        const url = "";
-        const data = {};
-  
-        const res = await fetch(url, {
+        const res = await fetch(this.urls[urlsKey], {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(data)
+          body: this.bodies[urlsKey],
+          credentials: "include",
         });
         
         const resJson = await res.json();
@@ -48,11 +59,9 @@ export default {
       }
     },
 
-    async getFunc() {
+    async getFunc(urlsKey) {
       try{
-        const url = "";
-      
-        const res = await fetch("");
+        const res = await fetch(this.urls[urlsKey], {credentials: "include"});
         const resJson =  await res.json();
         console.log(resJson);
       } catch (err) {
@@ -60,17 +69,15 @@ export default {
       }
     },
 
-    async putFunc() {
+    async putFunc(urlsKey) {
       try {
-        const url = "";
-        const data = {};
-
-        const res = await fetch(url, {
+        const res = await fetch(this.urls[urlsKey], {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json'
           },
-          body: JSON.stringify(data)
+          body: this.bodies[urlsKey],
+          credentials: "include"
         });
         
         const resJson = await res.json();
@@ -80,12 +87,11 @@ export default {
       }
     },
    
-    async deleteFunc() {
+    async deleteFunc(urlsKey) {
       try {
-        const url = "";
-      
-        const res = await fetch(url, {
-          method: 'DELETE'
+        const res = await fetch(this.urls[urlsKey], {
+          method: 'DELETE',
+          credentials: "include"
         });
         
         const resJson = await res.json();
@@ -100,18 +106,11 @@ export default {
 </script>
 
 <style>
-.button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-}
-
 button {
   background-color: #f0f0f0;
   border: none;
   padding: 10px 20px;
-  margin: 10px;
+  margin: 5px;
   border-radius: 5px;
   font-size: 16px;
   cursor: pointer;
@@ -122,6 +121,32 @@ button {
 button:hover {
   background-color: #e0e0e0;
   transform: translateY(-2px);
+}
+
+.component-container {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 50px;
+  gap: 10px;
+  height: 200px;
+}
+
+.input-button-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+}
+
+textarea {
+  height: 100%;
+  justify-content: space-between;
+  width: 300px;
+  resize: none;
+  padding: 5px;
 }
 
 </style>
